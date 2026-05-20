@@ -1,0 +1,6 @@
+{
+  "name": "El Patio Pixelado",
+  "description": "Un juego web 2D enfocado en la expresión creativa, el coleccionismo y el trueque pacífico de pegatinas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
