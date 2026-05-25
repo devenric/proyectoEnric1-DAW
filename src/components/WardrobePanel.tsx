@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { WardrobeItem, RarityType } from '../types';
 import { Sparkles, Crown, User, HelpCircle, AlertCircle } from 'lucide-react';
 
-interface WardrobePanelProps {
+interface WardrobePanelProps { //interfaz para las el "CRUD" de cada cosmético
   heads: WardrobeItem[];
   bodies: WardrobeItem[];
   auras: WardrobeItem[];
@@ -23,10 +23,10 @@ export default function WardrobePanel({
   onSelectItem,
   onClearCategory,
 }: WardrobePanelProps) {
-  const [activeTab, setActiveTab] = useState<'cabeza' | 'cuerpo' | 'aura'>('cabeza');
+  const [activeTab, setActiveTab] = useState<'cabeza' | 'cuerpo' | 'aura'>('cabeza'); //esto es para la pestaña activa
 
   const getRarityStyles = (rarity: RarityType) => {
-    switch (rarity) {
+    switch (rarity) { //switch para los estilos de cada rareza
       case 'comun':
         return {
           bg: 'bg-black/40 hover:bg-black/80',
@@ -70,7 +70,7 @@ export default function WardrobePanel({
     }
   };
 
-  const currentItems = 
+  const currentItems =  //esto sé que se basa en activeTab, pero no sé muy bien a que se refiere lo del ? y el : 
     activeTab === 'cabeza' ? heads : 
     activeTab === 'cuerpo' ? bodies : auras;
 
@@ -78,7 +78,7 @@ export default function WardrobePanel({
     activeTab === 'cabeza' ? selectedCabeza : 
     activeTab === 'cuerpo' ? selectedCuerpo : selectedAura;
 
-  return (
+  return ( //esto devuelve el HTML
     <div className="flex flex-col h-full bg-black/90 border-2 border-slate-800 rounded-2xl overflow-hidden p-5 shadow-2xl arcade-glow">
       {/* Visual Header */}
       <div className="flex items-center gap-3 mb-4 shrink-0">
@@ -93,20 +93,20 @@ export default function WardrobePanel({
 
       {/* Premium Category Tabs */}
       <div className="flex gap-1.5 p-1 bg-black rounded border border-slate-900 shrink-0 mb-4">
-        {(['cabeza', 'cuerpo', 'aura'] as const).map((tab) => (
+        {(['cabeza', 'cuerpo', 'aura'] as const).map((tab) => ( //como que as const? no entiendo esta parte de sintaxis, pero sé que se refiere a que recorre lo que hay en cada tab
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => setActiveTab(tab)} //aaaah, claro! con este estado, al hacer click en cada pestaña, se cambia el estado, pero 
             className={`flex-1 py-1.5 text-xs font-bold rounded uppercase transition-all duration-200 cursor-pointer ${
               activeTab === tab
                 ? 'bg-[#ccff00]/10 text-[#ccff00] border border-[#ccff00] font-black shadow-[0_0_8px_rgba(204,255,0,0.25)]'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent'
             }`}
           >
-            {tab === 'cabeza' && 'Cabeza'}
+            {tab === 'cabeza' && 'Cabeza'} 
             {tab === 'cuerpo' && 'Cuerpo'}
             {tab === 'aura' && 'Aura / Pet'}
-          </button>
+          </button>//esto no sé a qué se refiere (lo de &&)
         ))}
       </div>
 
@@ -118,7 +118,7 @@ export default function WardrobePanel({
             <span className="text-xs font-mono">ARMARIO ACCESORIO VACÍO</span>
             <span className="text-[10px] text-slate-600 uppercase">Use el escáner IA para subir nuevos cosméticos.</span>
           </div>
-        ) : (
+        ) : ( // y esos 2 puntos? no entiendo 
           <div className="grid grid-cols-2 gap-2.5">
             {currentItems.map((item) => {
               const styles = getRarityStyles(item.rarity);

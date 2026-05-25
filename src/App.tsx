@@ -4,7 +4,7 @@ import { CharacterState, WardrobeItem } from './types';
 import MonigoteBase from './components/MonigoteBase';
 import WardrobePanel from './components/WardrobePanel';
 import UgcScanner from './components/UgcScanner';
-
+import gatopendejo from './assets/gatopendejo.png'; //hay que importar
 import { 
   Sparkles, 
   Dices, 
@@ -15,10 +15,10 @@ import {
   Coins,
   Smile,
   Info
-} from 'lucide-react';
+} from 'lucide-react'; // este import no se para que es 
 
 // Skin colors for simulation
-const SKIN_COLORS = [
+const SKIN_COLORS = [ // ejemplos de skins
   { name: 'Gris Dummy', value: '#CBD5E1' },
   { name: 'Alienígena', value: '#34D399' },
   { name: 'Cibernético', value: '#38BDF8' },
@@ -27,8 +27,8 @@ const SKIN_COLORS = [
   { name: 'Slime Morado', value: '#A78BFA' }
 ];
 
-// Exclusive collectible pool for the Gachapón Machine!
-const GACHAPON_LOCKED_POOL: WardrobeItem[] = [
+//
+const TODAS_LAS_SKINS: WardrobeItem[] = [ // establece variable para el "almacén" del array de objetos
   {
     id: 'gacha_hamburguesa',
     name: 'Hamburger Voladora',
@@ -84,61 +84,62 @@ const GACHAPON_LOCKED_POOL: WardrobeItem[] = [
     svgColor1: '#4B5563',
     svgColor2: '#D1D5DB',
   }
-];
+]; 
+// esto en el futuro se reemplazará por una base de datos
 
 export default function App() {
-  // Available item lists matching types
+  // Aquí se crea los diferentes estados para las cabezas, cuerpos y auras
   const [heads, setHeads] = useState<WardrobeItem[]>(CORE_HEADS);
   const [bodies, setBodies] = useState<WardrobeItem[]>(CORE_BODIES);
   const [auras, setAuras] = useState<WardrobeItem[]>(CORE_AURAS);
 
-  // Character States
-  const [charState, setCharState] = useState<CharacterState>({
+  const [charState, setMood] = useState<CharacterState>({//estado para el "mood" del personaje
     skinColor: '#CBD5E1',
     eyeStyle: 'classic',
     animationState: 'idle',
-    selectedCabeza: CORE_HEADS[0], // Gato curioso as default
-    selectedCuerpo: CORE_BODIES[0], // Jersey navideño as default
-    selectedAura: CORE_AURAS[0],    // Fantasguito as default
+    selectedCabeza: CORE_HEADS[0], // Con 0, se dice que el objeto con posición 0, será el default
+    selectedCuerpo: CORE_BODIES[0], 
+    selectedAura: CORE_AURAS[0],    
   });
 
   // Gachapón simulation states
-  const [gachaTokens, setGachaTokens] = useState(5);
-  const [gachaItemResult, setGachaItemResult] = useState<WardrobeItem | null>(null);
-  const [gachaRolling, setGachaRolling] = useState(false);
-  const [gachaStatusMsg, setGachaStatusMsg] = useState('PULSA PARA PROCEDER');
+  const [gachaTokens, setGachaTokens] = useState(5); //aquí dice que máximo el usuario tendrá 5 tiradas, pero en el futuro se basará en los tickets que tenga
+  const [gachaItemResult, setGachaItemResult] = useState<WardrobeItem | null>(null); //si no me equivoco, el wardrobeitem, será null
+  const [gachaRolling, setGachaRolling] = useState(false); // la gachapon no estará rodando 24/7, así que por defecto, la establecemos en false
+  const [gachaStatusMsg, setGachaStatusMsg] = useState("¡let's go gambling!");
 
-  // Interactive Notification Feed for that "gamberro/silly" vibe
-  const [feedMessage, setFeedMessage] = useState('¡Bienvenido al Patio Pixelado! Pruébate algo de ropa.');
+// Mensaje por defecto
+  const [feedMessage, Mensaje] = useState('¡Bienvenido al Patio Pixelado! Pruébate algo de ropa.');
 
   // Auto-clear feed message after a few seconds
-  useEffect(() => {
+  useEffect(() => { //Diría que esto es un mensaje orientativo
     const timer = setTimeout(() => {
-      setFeedMessage('Sugerencia: Cambia el estilo de ojos del monigote haciendo clic en su cara.');
+      Mensaje('Sugerencia: Cambia el estilo de ojos del monigote haciendo clic en su cara.');
     }, 12000);
     return () => clearTimeout(timer);
   }, []);
 
-  const triggerFeed = (msg: string) => {
-    setFeedMessage(msg);
+  const textoyAlgoMas = (msg: string) => { //diría que esto es para imprimir un mensaje
+    Mensaje(msg);
   };
+  //? Esto llama a Mensaje, ya que en el futuro, a lo mejor, se querrá que haga algo además de que imprima el mensaje
 
   // Change selected clothes item
-  const handleSelectItem = (item: WardrobeItem) => {
-    setCharState((prev) => ({
+  const handleSelectItem = (item: WardrobeItem) => { //esto es para equipar los diferentes cosméticos
+    setMood((prev) => ({ //no entiendo muy bien la lógica básica de este método, pero sé lo que hace: te equipa el item, pero lo unico que no entiendo, es cómo lo equipa
       ...prev,
       [`selected${item.category.charAt(0).toUpperCase() + item.category.slice(1)}` as any]: item
     }));
-    triggerFeed(`Te has puesto: "${item.name}" (Creador: ${item.creator})`);
+    textoyAlgoMas(`Te has puesto: "${item.name}" (Creador: ${item.creator})`); //ahora que lo pienso, no hace falta hacer textoyAlgoMas, ya que lo hace Mensaje(), no?
   };
 
-  // Clear specific category of clothes
-  const handleClearCategory = (category: 'cabeza' | 'cuerpo' | 'aura') => {
-    setCharState((prev) => ({
+  // Te quita el cosmético de x categoría
+  const Quitar = (category: 'cabeza' | 'cuerpo' | 'aura') => {
+    setMood((prev) => ({
       ...prev,
       [`selected${category.charAt(0).toUpperCase() + category.slice(1)}` as any]: null
     }));
-    triggerFeed(`Te has quitado el outfit de la zona: ${category.toUpperCase()}`);
+    textoyAlgoMas(`Te has quitado el outfit de la zona: ${category.toUpperCase()}`);
   };
 
   // Cycle body eyes randomly on click
@@ -147,7 +148,7 @@ export default function App() {
     const currentIndex = eyeStyles.indexOf(charState.eyeStyle);
     const nextIndex = (currentIndex + 1) % eyeStyles.length;
     
-    setCharState((prev) => ({
+    setMood((prev) => ({
       ...prev,
       eyeStyle: eyeStyles[nextIndex]
     }));
@@ -160,7 +161,7 @@ export default function App() {
       cool: 'Gafas de Sol Radiactivas'
     };
 
-    triggerFeed(`Expresión facial modificada a: ${eyeNames[eyeStyles[nextIndex]]}`);
+    textoyAlgoMas(`Expresión facial modificada a: ${eyeNames[eyeStyles[nextIndex]]}`);
   };
 
   // Mix dynamic random dress
@@ -171,7 +172,7 @@ export default function App() {
     const randomEyes: CharacterState['eyeStyle'][] = ['classic', 'derp', 'cute', 'angry', 'cool'];
     const selectedEye = randomEyes[Math.floor(Math.random() * randomEyes.length)];
 
-    setCharState((prev) => ({
+    setMood((prev) => ({
       ...prev,
       selectedCabeza: randomHead,
       selectedCuerpo: randomBody,
@@ -179,19 +180,19 @@ export default function App() {
       eyeStyle: selectedEye
     }));
 
-    triggerFeed('🎲 ¡Armario barajado! ¡Qué combinación más estrafalaria!');
+    textoyAlgoMas('🎲 ¡Armario barajado! ¡Qué combinación más estrafalaria!');
   };
 
   // Reset character customizator
   const handleResetOutfit = () => {
-    setCharState((prev) => ({
+    setMood((prev) => ({
       ...prev,
       selectedCabeza: null,
       selectedCuerpo: null,
       selectedAura: null,
       eyeStyle: 'classic'
     }));
-    triggerFeed('🧹 Limpieza de armario completada. Monigote base al desnudo.');
+    textoyAlgoMas('🧹 Limpieza de armario completada. Monigote base al desnudo.');
   };
 
   // Receive approved UGC item from Customs AI
@@ -203,32 +204,28 @@ export default function App() {
     }
     
     // Auto equip!
-    setCharState((prev) => ({
+    setMood((prev) => ({
       ...prev,
       [`selected${newItem.category.charAt(0).toUpperCase() + newItem.category.slice(1)}` as any]: newItem
     }));
     
-    triggerFeed(`🎉 ¡UGC Aprobado! Equipada automáticamente tu creación: "${newItem.name}"`);
+    textoyAlgoMas(`🎉 ¡UGC Aprobado! Equipada automáticamente tu creación: "${newItem.name}"`);
   };
 
   // Pull Lever from the Permanent Community Gachapon slot machine!
-  const handlePullGachapon = () => {
+  const Roll = () => {
     if (gachaRolling) return;
     if (gachaTokens <= 0) {
-      setGachaStatusMsg('❌ SIN FICHAS');
-      triggerFeed('¡Te has quedado sin fichas gachapón! Pero Paco te regala 3 más de estrangis.');
-      setTimeout(() => {
-        setGachaTokens(3);
-        setGachaStatusMsg('PULSA PARA PROCEDER');
-      }, 1500);
+      setGachaStatusMsg('SIN FICHAS');
+      textoyAlgoMas('¡Te has quedado sin fichas gacha!');
       return;
     }
 
-    setGachaRolling(true);
-    setGachaItemResult(null);
-    setGachaTokens((prev) => prev - 1);
+    setGachaRolling(true); //al girar la gachapon, pasa de ser false a true
+    setGachaItemResult(null); //por defecto, nuestro resultado de la máquina gacha es null
+    setGachaTokens((prev) => prev - 1); //le quitamos 1 ticket al usuario
     setGachaStatusMsg('VOLTEANDO POZO COLECTIVO...');
-    triggerFeed('🎲 Tirando de la palanca de la tragaperras comunitaria...');
+    textoyAlgoMas('A POR EL BOTE  OEEE 🗣️​');
 
     let ticks = 0;
     const interval = setInterval(() => {
@@ -243,8 +240,8 @@ export default function App() {
       if (ticks === 12) {
         clearInterval(interval);
         
-        // Pick a guaranteed collectible item from GACHAPON_LOCKED_POOL
-        const unlockedCollectible = GACHAPON_LOCKED_POOL[Math.floor(Math.random() * GACHAPON_LOCKED_POOL.length)];
+        // Pick a guaranteed collectible item from TODAS_LAS_SKINS
+        const unlockedCollectible = TODAS_LAS_SKINS[Math.floor(Math.random() * TODAS_LAS_SKINS.length)];
         
         if (unlockedCollectible) {
           // Add it to our wardrobe state lists so user can browse and wear it!
@@ -269,7 +266,7 @@ export default function App() {
           // Auto equip the reward
           handleSelectItem(unlockedCollectible);
           setGachaStatusMsg('✨ ¡COSMÉTICO DESBLOQUEADO! ✨');
-          triggerFeed(`🎁 GACHAPÓN: ¡Has conseguido "${unlockedCollectible.name}" creado por ${unlockedCollectible.creator}!`);
+          textoyAlgoMas(`${unlockedCollectible.name}"`);
         }
         setGachaRolling(false);
       }
@@ -295,21 +292,17 @@ export default function App() {
                 EL PATIO PIXELADO
               </h1>
               <span className="text-[9px] font-bold bg-[#ff00ff]/10 text-[#ff00ff] border border-[#ff00ff]/30 px-1.5 py-0.5 rounded uppercase tracking-widest">
-                V.0.4.1 ALPHA PREVIEW // ARQUITECTO: ENFP-CORE
+                V.1.0.0
               </span>
             </div>
             <p className="text-[11px] text-slate-400 font-mono tracking-tight uppercase">
-              SISTEMA PAPER-DOLL ONLINE // AMBIENTE TOTALMENTE INMERSIVO
+              Club Penguin, pero no es Club Penguin
             </p>
           </div>
         </div>
 
         {/* Live System Tickers in Immersive Style */}
         <div className="flex items-center gap-4 text-xs font-mono">
-          <div className="hidden md:flex bg-black px-4 py-2 border border-[#ccff00]/30 rounded">
-            <span className="text-slate-500 text-[9px] block uppercase tracking-wider">IA ADUANAS</span>
-            <span className="text-[#00ff00] text-xs font-bold font-mono">SECURE // SEC_LOCK_OK</span>
-          </div>
           <div className="bg-black px-4 py-2 border border-[#ff00ff]/30 rounded">
             <span className="text-slate-500 text-[9px] block uppercase tracking-wider">GACHA COINS</span>
             <span className="text-[#ff00ff] text-xs font-bold font-mono flex items-center gap-1">
@@ -332,26 +325,22 @@ export default function App() {
               <div className="flex items-center gap-2">
                 <Smile className="w-4 h-4 text-[#ccff00]" />
                 <span className="text-xs font-bold text-slate-200 uppercase tracking-widest">
-                  [03] MINI AVATAR VISUALIZER
+                  Tu avatar
                 </span>
               </div>
               
-              {/* Reset to naked options */}
+              {/* Randomizar */}
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={handleRandomizeOutfit}
                   title="Aleatorio"
                   className="p-1 px-2.5 text-[10px] text-[#ccff00] hover:bg-[#ccff00] hover:text-black bg-black border border-[#ccff00]/40 transition-all rounded font-bold uppercase"
-                >
-                  MIX
-                </button>
+                >MIX</button>
                 <button
                   onClick={handleResetOutfit}
                   title="Quitar todo"
                   className="p-1 px-2.5 text-[10px] text-red-400 hover:bg-red-500/20 bg-black border border-red-900 transition-all rounded font-bold uppercase"
-                >
-                  CLEAR
-                </button>
+                >CLEAR</button>
               </div>
             </div>
 
@@ -363,25 +352,24 @@ export default function App() {
 
             {/* Render center base dynamic avatar dolls */}
             <MonigoteBase 
-              state={charState} 
-              onEyeClick={handleCycleEyes} 
+              state={charState}   //esto no sé porqué da error. dice que eyeOncClick: () => void;} no es asignable
             />
 
             {/* Bottom Color Selectors / Expressions */}
             <div className="space-y-3 shrink-0 pt-3 border-t border-[#ccff00]/10">
               
-              {/* Skin Tone Selector */}
+              {/* Este de aquí es el selector de  */}
               <div>
                 <span className="text-[10px] text-slate-400 uppercase block mb-1.5 font-bold tracking-wider">
-                  Color de Piel (Monigote Base):
+                  Color de Piel
                 </span>
                 <div className="flex gap-2">
-                  {SKIN_COLORS.map((col) => (
+                  {SKIN_COLORS.map((col) => ( //en este caso, no sé que es col, y este bloque no sé exactamente que es 
                     <button
                       key={col.value}
                       onClick={() => {
-                        setCharState(v => ({ ...v, skinColor: col.value }));
-                        triggerFeed(`Tonalidad del cuerpo modificada a: "${col.name}"`);
+                        setMood(v => ({ ...v, skinColor: col.value }));
+                        textoyAlgoMas(`Tonalidad del cuerpo modificada a: "${col.name}"`);
                       }}
                       title={col.name}
                       style={{ backgroundColor: col.value }}
@@ -399,12 +387,12 @@ export default function App() {
                   Simulador Movimiento:
                 </span>
                 <div className="flex gap-1">
-                  {(['idle', 'dancing', 'walking', 'jumping'] as const).map((anim) => (
+                  {(['idle', 'dancing', 'walking', 'jumping'] as const).map((anim) => ( //aquí sé que se seleccionan las diferentes animaciones, aunque no śe como se realiza esa animación
                     <button
                       key={anim}
                       onClick={() => {
-                        setCharState(v => ({ ...v, animationState: anim }));
-                        triggerFeed(`Cambiando animación de movimiento a: ${anim.toUpperCase()}`);
+                        setMood(v => ({ ...v, animationState: anim }));
+                        textoyAlgoMas(`Cambiando animación de movimiento a: ${anim.toUpperCase()}`);
                       }}
                       className={`text-[9.5px] uppercase px-2 py-1 rounded transition-all cursor-pointer ${
                         charState.animationState === anim
@@ -430,16 +418,16 @@ export default function App() {
               <div className="flex items-center gap-2">
                 <div className="w-2.5 h-2.5 rounded-full bg-[#ff00ff] animate-pulse" />
                 <span className="text-xs font-bold text-slate-200 uppercase tracking-widest">
-                  [04] TRAGAPERRAS COMUNITARIA
+                  Gachapon Insana
                 </span>
               </div>
               <span className="text-[10.5px] text-[#ff00ff] flex items-center gap-1.5 font-bold">
-                FICHAS: {gachaTokens}
+                FICHAS: {gachaTokens} {/*Aquí se hace referencia a los tokens existentes*/}
               </span>
             </div>
 
             <p className="text-[11px] text-slate-400 leading-relaxed mb-4 uppercase">
-              Consigue cosméticos aleatorios creados por otros vecinos que la IA de Aduanas ha aprobado. ¡Pozo permanente!
+                ¡Consigue Skins!
             </p>
 
             <div className="flex items-center gap-3 bg-slate-950 p-3 rounded border border-slate-850 relative">
@@ -450,18 +438,18 @@ export default function App() {
 
               {/* Animated lever pull button */}
               <button
-                disabled={gachaRolling}
-                onClick={handlePullGachapon}
+                disabled={gachaRolling} //aquí dice si está rolleando. será true o false
+                onClick={Roll} //aquí se llama al validador de "tickets de gacha"
                 className={`px-4 py-2.5 rounded text-xs font-black bg-[#ff00ff] text-black hover:bg-white transition-all shadow-[0_0_12px_rgba(255,0,255,0.4)] active:scale-95 cursor-pointer flex items-center justify-center uppercase`}
               >
-                {gachaRolling ? 'ROLLING' : 'X-PALANCA'}
+                {gachaRolling ? 'ROLLING' : 'X-PALANCA'} {/*Diría que esto representa el estado de la gachapon. rolling significa true, que está girando, y teorizo que x-palanca significa false, o que no está girando */}
               </button>
             </div>
 
-            {/* Display reward window if available */}
+            {/* Mostrar Resultado del giro */}
             {gachaItemResult && (
               <div className="mt-3 p-2.5 bg-[#ff00ff]/10 border border-[#ff00ff]/30 rounded flex items-center gap-2.5">
-                <span className="text-xl">🎁</span>
+                <span className="text-xl"><img src={gatopendejo} style={{backgroundColor:"white", width: "30px", height: "30px"}}></img></span>
                 <div className="flex-1 min-w-0">
                   <div className="text-[10px] text-[#ff00ff] uppercase font-bold">¡Premio obtenido!</div>
                   <div className="text-xs text-white font-bold truncate leading-none">
@@ -479,7 +467,7 @@ export default function App() {
 
         {/* CENTER COLUMN (2/3) - Wardrobe Explorer panel lists */}
         <section className="lg:col-span-4 flex flex-col h-full">
-          <WardrobePanel
+          <WardrobePanel //aquí llamas al componente wardrobe Panel
             heads={heads}
             bodies={bodies}
             auras={auras}
@@ -487,7 +475,7 @@ export default function App() {
             selectedCuerpo={charState.selectedCuerpo}
             selectedAura={charState.selectedAura}
             onSelectItem={handleSelectItem}
-            onClearCategory={handleClearCategory}
+            onClearCategory={Quitar}
           />
         </section>
 
@@ -495,17 +483,14 @@ export default function App() {
         <section className="lg:col-span-4 flex flex-col justify-between space-y-4 h-full">
           
           {/* UGC Drag/Drop Scanner Panel */}
-          <div className="flex-1">
-            <UgcScanner onApprovedItem={handleAddApprovedUgc} />
+          <div className="flex-1"> 
+            <UgcScanner onApprovedItem={handleAddApprovedUgc} />{/* Llamas a UGC Scanner*/} 
           </div>
 
           {/* SILLY NEWS FEED TICKER BAR (Bottom row info) */}
           <div className="bg-black border-2 border-slate-800 rounded-2xl p-4 shadow-sm shrink-0 select-none">
             <div className="flex items-center gap-2 mb-1.5 text-slate-400 border-b border-[#ccff00]/10 pb-1">
-              <TrendingUp className="w-3.5 h-3.5 text-[#ccff00]" />
-              <span className="text-[10.5px] uppercase tracking-wider font-bold text-[#ccff00]">
-                VECINDARIO FEED // CONSOLA ACTIVA
-              </span>
+                Guia Turboflipante
             </div>
             <div className="p-2.5 bg-black rounded border border-slate-850 min-h-[46px] flex items-center justify-between">
               <p className="text-[11px] text-slate-300 leading-snug">
@@ -518,7 +503,7 @@ export default function App() {
           <div className="bg-slate-950 border border-slate-850 p-3 rounded flex gap-2.5 select-none shrink-0">
             <Info className="w-4 h-4 text-[#ccff00] shrink-0 mt-0.5" />
             <div className="space-y-0.5">
-              <span className="text-[10px] text-[#ccff00] uppercase font-black block tracking-widest">ARQUITECTURA DE CAPAS:</span>
+              <span className="text-[10px] text-[#ccff00] uppercase font-black block tracking-widest">Información</span>
               <p className="text-[10px] text-slate-500 leading-relaxed font-mono uppercase">
                 Paper doll renderiza en tiempo real sobre capas de superposición inercial sincrónica ({charState.animationState.toUpperCase()}).
               </p>
@@ -529,9 +514,9 @@ export default function App() {
 
       </main>
 
-      {/* Footer System Credits */}
+      {/* Footer */}
       <footer className="border-t border-[#ccff00]/10 py-3 text-center text-[10px] text-slate-500 select-none shrink-0 uppercase tracking-widest bg-black">
-        EL PATIO PIXELADO SYSTEM v0.4.1 // COMPONENT: SCREEN_CRT_V2 // 2026
+        copy; NOMBRE A ELEGIR - Todos los derechos reservados
       </footer>
 
     </div>
