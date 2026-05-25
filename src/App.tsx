@@ -90,6 +90,7 @@ const TODAS_LAS_SKINS: WardrobeItem[] = [ // establece variable para el "almacé
 export default function App() {
   // Aquí se crea los diferentes estados para las cabezas, cuerpos y auras
   const [heads, setHeads] = useState<WardrobeItem[]>(CORE_HEADS);
+  const [hairs, setHair] = useState<WardrobeItem[]>(CORE_HEADS);
   const [bodies, setBodies] = useState<WardrobeItem[]>(CORE_BODIES);
   const [auras, setAuras] = useState<WardrobeItem[]>(CORE_AURAS);
 
@@ -98,6 +99,7 @@ export default function App() {
     eyeStyle: 'classic',
     animationState: 'idle',
     selectedCabeza: CORE_HEADS[0], // Con 0, se dice que el objeto con posición 0, será el default
+    selectedPelo: CORE_HEADS[0],
     selectedCuerpo: CORE_BODIES[0], 
     selectedAura: CORE_AURAS[0],    
   });
@@ -125,7 +127,7 @@ export default function App() {
   //? Esto llama a Mensaje, ya que en el futuro, a lo mejor, se querrá que haga algo además de que imprima el mensaje
 
   // Change selected clothes item
-  const handleSelectItem = (item: WardrobeItem) => { //esto es para equipar los diferentes cosméticos
+  const equipar = (item: WardrobeItem) => { //esto es para equipar los diferentes cosméticos
     setMood((prev) => ({ //no entiendo muy bien la lógica básica de este método, pero sé lo que hace: te equipa el item, pero lo unico que no entiendo, es cómo lo equipa
       ...prev,
       [`selected${item.category.charAt(0).toUpperCase() + item.category.slice(1)}` as any]: item
@@ -134,7 +136,7 @@ export default function App() {
   };
 
   // Te quita el cosmético de x categoría
-  const Quitar = (category: 'cabeza' | 'cuerpo' | 'aura') => {
+  const Quitar = (category: 'cabeza' | 'pelo' | 'cuerpo' | 'aura') => {
     setMood((prev) => ({
       ...prev,
       [`selected${category.charAt(0).toUpperCase() + category.slice(1)}` as any]: null
@@ -167,6 +169,7 @@ export default function App() {
   // Mix dynamic random dress
   const handleRandomizeOutfit = () => {
     const randomHead = heads[Math.floor(Math.random() * heads.length)] || null;
+    const randomHair = hairs[Math.floor(Math.random() * heads.length)] || null;
     const randomBody = bodies[Math.floor(Math.random() * bodies.length)] || null;
     const randomAura = auras[Math.floor(Math.random() * auras.length)] || null;
     const randomEyes: CharacterState['eyeStyle'][] = ['classic', 'derp', 'cute', 'angry', 'cool'];
@@ -175,6 +178,7 @@ export default function App() {
     setMood((prev) => ({
       ...prev,
       selectedCabeza: randomHead,
+      selectedPelo: randomHair,
       selectedCuerpo: randomBody,
       selectedAura: randomAura,
       eyeStyle: selectedEye
@@ -188,6 +192,7 @@ export default function App() {
     setMood((prev) => ({
       ...prev,
       selectedCabeza: null,
+      selectedPelo: null,
       selectedCuerpo: null,
       selectedAura: null,
       eyeStyle: 'classic'
@@ -196,24 +201,25 @@ export default function App() {
   };
 
   // Receive approved UGC item from Customs AI
-  const handleAddApprovedUgc = (newItem: WardrobeItem) => {
-    if (newItem.category === 'cabeza') {
-      setHeads((prev) => [newItem, ...prev]);
-    } else {
-      setBodies((prev) => [newItem, ...prev]);
-    }
+const crearCosmetico = (newItem: WardrobeItem) => {
+  if (newItem.category === 'cabeza') {
+    setHeads((prev) => [newItem, ...prev]);
+  } else if (newItem.category === 'pelo') {
+    setHair((prev) => [newItem, ...prev]);
+  } else if (newItem.category === 'cuerpo'){
+    setBodies((prev) => [newItem, ...prev]);
+  }
     
-    // Auto equip!
-    setMood((prev) => ({
-      ...prev,
-      [`selected${newItem.category.charAt(0).toUpperCase() + newItem.category.slice(1)}` as any]: newItem
-    }));
+  // Auto equip! (Esto debe ir DENTRO de la función)
+  setMood((prev) => ({
+    ...prev,
+    [`selected${newItem.category.charAt(0).toUpperCase() + newItem.category.slice(1)}` as any]: newItem
+  }));
     
-    textoyAlgoMas(`🎉 ¡UGC Aprobado! Equipada automáticamente tu creación: "${newItem.name}"`);
-  };
+  textoyAlgoMas(`🎉 ¡UGC Aprobado! Equipada automáticamente: "${newItem.name}"`);
+};
 
-  // Pull Lever from the Permanent Community Gachapon slot machine!
-  const Roll = () => {
+const Roll = () => {
     if (gachaRolling) return;
     if (gachaTokens <= 0) {
       setGachaStatusMsg('SIN FICHAS');
@@ -221,16 +227,15 @@ export default function App() {
       return;
     }
 
-    setGachaRolling(true); //al girar la gachapon, pasa de ser false a true
-    setGachaItemResult(null); //por defecto, nuestro resultado de la máquina gacha es null
-    setGachaTokens((prev) => prev - 1); //le quitamos 1 ticket al usuario
+    setGachaRolling(true);
+    setGachaItemResult(null);
+    setGachaTokens((prev) => prev - 1);
     setGachaStatusMsg('VOLTEANDO POZO COLECTIVO...');
-    textoyAlgoMas('A POR EL BOTE  OEEE 🗣️​');
+    textoyAlgoMas('A POR EL BOTE OEEE 🗣️​');
 
     let ticks = 0;
     const interval = setInterval(() => {
       ticks++;
-      // Create a fancy cycling message to mimic the slot rolling
       const tempItems = [...heads, ...bodies, ...auras];
       const randomItem = tempItems[Math.floor(Math.random() * tempItems.length)];
       if (randomItem) {
@@ -240,39 +245,29 @@ export default function App() {
       if (ticks === 12) {
         clearInterval(interval);
         
-        // Pick a guaranteed collectible item from TODAS_LAS_SKINS
         const unlockedCollectible = TODAS_LAS_SKINS[Math.floor(Math.random() * TODAS_LAS_SKINS.length)];
         
         if (unlockedCollectible) {
-          // Add it to our wardrobe state lists so user can browse and wear it!
+          // Lógica corregida para cada categoría
           if (unlockedCollectible.category === 'cabeza') {
-            setHeads((prev) => {
-              if (prev.some((h) => h.id === unlockedCollectible.id)) return prev;
-              return [unlockedCollectible, ...prev];
-            });
+            setHeads((prev) => prev.some(h => h.id === unlockedCollectible.id) ? prev : [unlockedCollectible, ...prev]);
+          } else if (unlockedCollectible.category === 'pelo') {
+            setHair((prev) => prev.some(h => h.id === unlockedCollectible.id) ? prev : [unlockedCollectible, ...prev]);
           } else if (unlockedCollectible.category === 'cuerpo') {
-            setBodies((prev) => {
-              if (prev.some((b) => b.id === unlockedCollectible.id)) return prev;
-              return [unlockedCollectible, ...prev];
-            });
-          } else {
-            setAuras((prev) => {
-              if (prev.some((a) => a.id === unlockedCollectible.id)) return prev;
-              return [unlockedCollectible, ...prev];
-            });
+            setBodies((prev) => prev.some(b => b.id === unlockedCollectible.id) ? prev : [unlockedCollectible, ...prev]);
+          } else if (unlockedCollectible.category === 'aura') {
+            setAuras((prev) => prev.some(a => a.id === unlockedCollectible.id) ? prev : [unlockedCollectible, ...prev]);
           }
 
           setGachaItemResult(unlockedCollectible);
-          // Auto equip the reward
-          handleSelectItem(unlockedCollectible);
+          equipar(unlockedCollectible);
           setGachaStatusMsg('✨ ¡COSMÉTICO DESBLOQUEADO! ✨');
-          textoyAlgoMas(`${unlockedCollectible.name}"`);
+          textoyAlgoMas(`¡Has conseguido: ${unlockedCollectible.name}!`);
         }
         setGachaRolling(false);
       }
     }, 120);
   };
-
   return (
     <div className="min-h-screen bg-[#050505] text-white flex flex-col font-mono relative overflow-hidden selection:bg-[#ccff00] selection:text-black">
       {/* Immersive CRT Monocromatic Scanline Overlay */}
@@ -469,12 +464,14 @@ export default function App() {
         <section className="lg:col-span-4 flex flex-col h-full">
           <WardrobePanel //aquí llamas al componente wardrobe Panel
             heads={heads}
+            hairs={hairs}
             bodies={bodies}
             auras={auras}
             selectedCabeza={charState.selectedCabeza}
+            selectedPelo={charState.selectedPelo}
             selectedCuerpo={charState.selectedCuerpo}
             selectedAura={charState.selectedAura}
-            onSelectItem={handleSelectItem}
+            onSelectItem={equipar}
             onClearCategory={Quitar}
           />
         </section>
@@ -484,7 +481,7 @@ export default function App() {
           
           {/* UGC Drag/Drop Scanner Panel */}
           <div className="flex-1"> 
-            <UgcScanner onApprovedItem={handleAddApprovedUgc} />{/* Llamas a UGC Scanner*/} 
+            <UgcScanner onApprovedItem={crearCosmetico} />{/* Llamas al creador de cosméticos*/} 
           </div>
 
           {/* SILLY NEWS FEED TICKER BAR (Bottom row info) */}

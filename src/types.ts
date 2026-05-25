@@ -3,7 +3,7 @@ export type RarityType = 'comun' | 'raro' | 'epico' | 'legendario' | 'silly';
 export interface WardrobeItem {
   id: string;
   name: string;
-  category: 'cabeza' | 'cuerpo' | 'aura';
+  category: 'cabeza' | 'pelo' | 'cuerpo' | 'aura';
   rarity: RarityType;
   description: string;
   creator: string;
@@ -21,6 +21,7 @@ export interface CharacterState {
   eyeStyle: 'classic' | 'derp' | 'cute' | 'angry' | 'cool';
   animationState: 'idle' | 'dancing' | 'walking' | 'jumping';
   selectedCabeza: WardrobeItem | null;
+  selectedPelo: WardrobeItem | null;
   selectedCuerpo: WardrobeItem | null;
   selectedAura: WardrobeItem | null;
 }

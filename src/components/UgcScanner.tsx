@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { WardrobeItem } from '../types';
 import { Cpu, Upload } from 'lucide-react';
-
 interface UgcScannerProps {
   onApprovedItem: (newItem: WardrobeItem) => void;
 }
@@ -15,19 +14,21 @@ const MOCK_UGC_TEMPLATES = [
 export default function UgcScanner({ onApprovedItem }: UgcScannerProps) {
   // MEMORIA: Solo necesitamos saber si el ratón arrastra algo, y en qué ranura lo va a meter.
   const [dragActive, setDragActive] = useState(false);
-  const [targetCategory, setTargetCategory] = useState<'cabeza' | 'cuerpo'>('cabeza');
-  
+  const [targetCategory, setTargetCategory] = useState<'cabeza' | 'pelo' | 'cuerpo'>('cabeza');
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // GATILLO: Coge la imagen, empaqueta la caja "WardrobeItem" y la manda al armario directamente.
   const handleApprove = (fileName: string, fileUrl: string) => {
+      let Nombrecreador= prompt("Nombre de Creador:") || "Usuario Anónimo";
+    let Descripcion = prompt("Añade una descripción") || "Sin descripción";
     const newItem: WardrobeItem = {
       id: 'ugc_' + Math.random().toString(36).substring(2, 9),
       name: fileName.split('.')[0] || 'Objeto UGC',
       category: targetCategory,
       rarity: 'silly',
-      description: 'Inyectado directamente sin preguntar.',
-      creator: 'UGC',
+      description: Descripcion,
+      creator: Nombrecreador,
       isUgc: true,
       ugcUrl: fileUrl,
       itemCode: 'ugc_dynamic'
@@ -46,7 +47,7 @@ export default function UgcScanner({ onApprovedItem }: UgcScannerProps) {
         </div>
         <div className="flex items-center gap-1 bg-black border border-slate-900 p-0.5 rounded">
           <span className="text-[9px] font-mono text-slate-500 px-1.5 pt-0.5">RANURA:</span>
-          {(['cabeza', 'cuerpo'] as const).map((cat) => (
+          {(['cabeza', 'pelo', 'cuerpo'] as const).map((cat) => (
             <button
               key={cat}
               onClick={() => setTargetCategory(cat)}

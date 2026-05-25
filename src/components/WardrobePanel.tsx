@@ -4,9 +4,11 @@ import { Sparkles, Crown, User, HelpCircle, AlertCircle } from 'lucide-react';
 
 interface WardrobePanelProps { //interfaz para las el "CRUD" de cada cosmético
   heads: WardrobeItem[];
+  hairs: WardrobeItem[];
   bodies: WardrobeItem[];
   auras: WardrobeItem[];
   selectedCabeza: WardrobeItem | null;
+  selectedPelo: WardrobeItem | null;
   selectedCuerpo: WardrobeItem | null;
   selectedAura: WardrobeItem | null;
   onSelectItem: (item: WardrobeItem) => void;
@@ -15,15 +17,17 @@ interface WardrobePanelProps { //interfaz para las el "CRUD" de cada cosmético
 
 export default function WardrobePanel({
   heads,
+  hairs,
   bodies,
   auras,
   selectedCabeza,
+  selectedPelo,
   selectedCuerpo,
   selectedAura,
   onSelectItem,
   onClearCategory,
 }: WardrobePanelProps) {
-  const [activeTab, setActiveTab] = useState<'cabeza' | 'cuerpo' | 'aura'>('cabeza'); //esto es para la pestaña activa
+  const [activeTab, setActiveTab] = useState<'cabeza' | 'pelo' | 'cuerpo' | 'aura'>('cabeza'); //esto es para la pestaña activa
 
   const getRarityStyles = (rarity: RarityType) => {
     switch (rarity) { //switch para los estilos de cada rareza
@@ -72,10 +76,12 @@ export default function WardrobePanel({
 
   const currentItems =  //esto sé que se basa en activeTab, pero no sé muy bien a que se refiere lo del ? y el : 
     activeTab === 'cabeza' ? heads : 
+    activeTab === 'pelo' ? hairs : 
     activeTab === 'cuerpo' ? bodies : auras;
 
   const currentSelectedItem = 
     activeTab === 'cabeza' ? selectedCabeza : 
+    activeTab === 'pelo' ? selectedPelo :
     activeTab === 'cuerpo' ? selectedCuerpo : selectedAura;
 
   return ( //esto devuelve el HTML
@@ -93,7 +99,7 @@ export default function WardrobePanel({
 
       {/* Premium Category Tabs */}
       <div className="flex gap-1.5 p-1 bg-black rounded border border-slate-900 shrink-0 mb-4">
-        {(['cabeza', 'cuerpo', 'aura'] as const).map((tab) => ( //como que as const? no entiendo esta parte de sintaxis, pero sé que se refiere a que recorre lo que hay en cada tab
+        {(['cabeza','pelo','cuerpo', 'aura'] as const).map((tab) => ( //como que as const? no entiendo esta parte de sintaxis, pero sé que se refiere a que recorre lo que hay en cada tab
           <button
             key={tab}
             onClick={() => setActiveTab(tab)} //aaaah, claro! con este estado, al hacer click en cada pestaña, se cambia el estado, pero 
@@ -104,6 +110,7 @@ export default function WardrobePanel({
             }`}
           >
             {tab === 'cabeza' && 'Cabeza'} 
+            {tab === 'pelo' && 'Pelo'}
             {tab === 'cuerpo' && 'Cuerpo'}
             {tab === 'aura' && 'Aura / Pet'}
           </button>//esto no sé a qué se refiere (lo de &&)
